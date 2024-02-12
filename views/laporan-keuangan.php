@@ -3,7 +3,7 @@
 
 <head>
     <meta charset="utf-8">
-    <title>DGital - Digital Agency HTML Template</title>
+    <title>CAKEP</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -97,6 +97,7 @@
                                     <th>Nama Barang</th>
                                     <th>Harga Barang</th>
                                     <th>Keterangan</th>
+                                    <th>Action</th>
                                 </tr>
                             </thead>
                             <tbody id="dTable">
@@ -109,6 +110,38 @@
                                 </tr>
                             </tfoot>
                         </table>
+                    </div>
+                </div>
+            </div>
+
+            <div class="modal fade" id="editModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="editModalLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                    <div class="modal-content" style="background-color: #6222CC !important;">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5 text-white" id="editModalLabel">Edit Data</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body text-white">
+                        <form id="edit">
+                            <input type="hidden" name="id" id="id_ed">
+                            <div>
+                                <label for="namabarang_ed" class="form-label">Nama Barang</label>
+                                <input type="text" name="nama_barang" id="namabarang_ed" class="form-control" style="background-color: #E9FFC2; !important">
+                            </div>
+                            <div class="mb-2">
+                                <label for="hargabarang_ed" class="form-label">Harga Barang</label>
+                                <input type="text" name="harga_barang" id="hargabarang_ed" class="form-control" style="background-color: #E9FFC2; !important">
+                            </div>
+                            <div class="mb-2">
+                                <label for="keterangan_ed" class="form-label">Keterangan</label>
+                                <input type="text" name="keterangan" id="keterangan_ed" class="form-control" style="background-color: #E9FFC2; !important">
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" id="btnEdit" class="btn btn-primary">Save</button>
+                    </div>
                     </div>
                 </div>
             </div>
@@ -202,6 +235,7 @@
     <!-- JavaScript Libraries -->
     <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script src="../assets/lib/wow/wow.min.js"></script>
     <script src="../assets/lib/easing/easing.min.js"></script>
     <script src="../assets/lib/waypoints/waypoints.min.js"></script>
@@ -241,6 +275,16 @@
                      <td>${v.NAMA_BARANG}</td>
                      <td>${formatRupiah(v.HARGA_BARANG)}</td>
                      <td>${v.KETERANGAN}</td>
+                     <td>
+                        <div class="d-inline p-2">
+                           <button class="btn update" title="Update" data-bs-toggle="modal" data-bs-target="#editModal" data-id="${v.ID}" data-namabarang="${v.NAMA_BARANG}" data-hargabarang="${v.HARGA_BARANG}" data-keterangan="${v.KETERANGAN}">
+                              <i class="bi bi-pencil-square" style="font-size: 25px; background-color: palegreen; color: green; padding: 3px; border-radius: 10px;"></i>
+                           </button>
+                           <button class="btn delete" title="Delete" data-id="${v.ID}">
+                              <i class="bi bi-trash" style="font-size: 25px; background-color: bisque; color: red; padding: 3px; border-radius: 10px;"></i>
+                           </button>
+                        </div>
+                     </td>
                   </tr>
                `;
             });
@@ -271,4 +315,113 @@
       rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
       return rupiah;
    }
+
+   $('#myTable').on('click', '.update', function () {
+      var id = $(this).data('id');
+      var namabarang = $(this).data('namabarang');
+      var hargabarang = $(this).data('hargabarang');
+      var keterangan = $(this).data('keterangan');
+
+      $('#id_ed').val(id);
+      $('#namabarang_ed').val(namabarang);
+      $('#hargabarang_ed').val(hargabarang);
+      $('#keterangan_ed').val(keterangan);
+   })
+
+   $('#btnEdit').click(function() {
+      var data = $('#edit').serialize();
+      console.log(data);
+
+      $.ajax({
+         type: 'post',
+         url: '../function/edit_transaksi.php',
+         data: data,
+         success: function (res) {
+            // console.log(res);
+            Swal.fire({
+               title: 'Success!',
+               text: 'Edit Success',
+               icon: 'success',
+               confirmButtonText: 'OK'
+            });
+         },
+         error: function (err) {
+            // console.log(err);
+            Swal.fire({
+               title: 'Error!',
+               text: 'Edit Failed',
+               icon: 'error',
+               confirmButtonText: 'Try Again'
+            });
+         },
+         complete: function (result) {
+            $('#btnEdit').hide();
+            setTimeout(function() {
+               location.reload();
+            }, 3000);
+         }
+      });
+   })
+
+   $('#myTable').on('click', '.delete', function() {
+      var data_id = $(this).data('id');
+      // console.log(data_id);
+      
+      const swalWithBootstrapButtons = Swal.mixin({
+         customClass: {
+            confirmButton: "btn btn-success mr-2",
+            cancelButton: "btn btn-danger"
+         },
+         buttonsStyling: false
+      });
+      swalWithBootstrapButtons.fire({
+         title: "Are you sure?",
+         text: "You won't be able to revert this!",
+         icon: "warning",
+         showCancelButton: true,
+         confirmButtonText: "Yes, delete it!",
+         cancelButtonText: "No, cancel!",
+         reverseButtons: true
+      }).then((result) => {
+         if (result.isConfirmed) {
+            $.ajax({
+               type: 'post',
+               url: '../function/delete_transaksi.php',
+               data: { id : data_id },
+               success: function (res) {
+                  // console.log(res);
+                  swalWithBootstrapButtons.fire({
+                     title: "Deleted!",
+                     text: "Data has been deleted.",
+                     icon: "success"
+                  });
+               },
+               error: function (err) {
+                  // console.log(err);
+                  // Swal.fire({
+                  //    title: 'Error!',
+                  //    text: 'Delete Failed',
+                  //    icon: 'error',
+                  //    confirmButtonText: 'Try Again'
+                  // });
+               },
+               complete: function (result) {
+                  // $('#btnAdd').hide();
+                  setTimeout(function() {
+                     location.reload();
+                  }, 3000);
+               }
+            });
+         } else if (
+            /* Read more about handling dismissals below */
+            result.dismiss === Swal.DismissReason.cancel
+         ) {
+            swalWithBootstrapButtons.fire({
+               title: "Cancelled",
+               text: "Data is safe :)",
+               icon: "error"
+            });
+         }
+      });
+   });
 </script>

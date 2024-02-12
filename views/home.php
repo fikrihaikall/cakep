@@ -1,9 +1,11 @@
+<?php session_start(); ?>
+
 <!DOCTYPE html>
 <html lang="en">
 
 <head>
     <meta charset="utf-8">
-    <title>DGital - Digital Agency HTML Template</title>
+    <title>CAKEP</title>
     <meta content="width=device-width, initial-scale=1.0" name="viewport">
     <meta content="" name="keywords">
     <meta content="" name="description">
@@ -59,17 +61,17 @@
                         <a href="./transaksi.php" class="nav-item nav-link">Transaksi</a>
                         <a href="./laporan-keuangan.php" class="nav-item nav-link">Laporan Keuangan</a>
                         <a href="project.html" class="nav-item nav-link">Managemen Kategori</a>
-                        <!-- <div class="nav-item dropdown">
-                              <a href="#" class="nav-link dropdown-toggle" data-bs-toggle="dropdown">Pages</a>
-                              <div class="dropdown-menu m-0">
-                                 <a href="team.html" class="dropdown-item">Our Team</a>
-                                 <a href="testimonial.html" class="dropdown-item">Testimonial</a>
-                                 <a href="404.html" class="dropdown-item">404 Page</a>
-                              </div>
-                        </div> -->
                         <a href="contact.html" class="nav-item nav-link">Contact</a>
                      </div>
-                     <!-- <a href="" class="btn rounded-pill py-2 px-4 ms-3 d-none d-lg-block">Get Started</a> -->
+                     <!-- <a href="#" class="btn rounded-pill py-2 px-4 ms-3 d-none d-lg-block dropdown-toggle" >Profile</a> -->
+                     <div class="navbar-nav dropdown" style="margin-right: 3rem;">
+                        <a href="#" class="nav-link dropdown-toggle text-white" data-bs-toggle="dropdown"><?= htmlspecialchars($_SESSION["username"]); ?></a>
+                        <div class="dropdown-menu m-0">
+                            <a href="team.html" class="dropdown-item">Our Team</a>
+                            <a href="./auth/reset-password.php" class="dropdown-item">Reset Password</a>
+                            <a href="./auth/logout.php" class="dropdown-item">Logout</a>
+                        </div>
+                    </div>
                   </div>
             </nav>
 
